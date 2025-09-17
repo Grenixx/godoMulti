@@ -19,5 +19,6 @@ func _on_join_pressed() -> void:
 func add_player(id = 1):
 	var player = player_scene.instantiate()
 	player.name = str(id)
+	player.global_transform.origin = Vector3(0, 0, 0)  # ou un spawn point
 
 	call_deferred("add_child", player)

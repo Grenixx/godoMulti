@@ -7,11 +7,11 @@ extends CharacterBody3D
 
 var target_velocity = Vector3.ZERO
 
+var boolSpawnFirstTime = false
+
 @onready var cam = $Camera3D
 
 func _enter_tree() -> void:
-	print(name.to_int())
-	
 	set_multiplayer_authority(name.to_int())
 
 func _ready() -> void:
@@ -19,6 +19,10 @@ func _ready() -> void:
 
 func _physics_process(delta):
 	if is_multiplayer_authority():
+		if boolSpawnFirstTime == false:
+			global_position = Vector3(5,5,5)
+			boolSpawnFirstTime = true
+		
 		var direction = Vector3.ZERO
 
 		if Input.is_action_pressed("ui_right"):
