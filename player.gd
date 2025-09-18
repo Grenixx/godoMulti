@@ -2,9 +2,12 @@ extends CharacterBody3D
 
 @export var speed: float = 14.0
 @export var fall_acceleration: float = 75.0
+@export var jump_velocity: float = 30.0
 @export var mouse_sensitivity: float = 0.002
 @onready var dig_marker = $Camera3D/digMarker
 @export var dig_interval: float = 0.1  # temps entre chaque dig/make en secondes
+@export var dig_power: float = 20  # temps entre chaque dig/make en secondes
+
 
 var target_velocity = Vector3.ZERO
 var boolSpawnFirstTime = false
@@ -67,10 +70,12 @@ func _physics_process(delta):
 	target_velocity.x = direction.x * speed
 	target_velocity.z = direction.z * speed
 
-	if not is_on_floor():
-		target_velocity.y -= fall_acceleration * delta
-	else:
+	if is_on_floor():
 		target_velocity.y = 0.0
+		if Input.is_action_just_pressed("jump"):  # Assure-toi que "jump" est défini dans Input Map
+			target_velocity.y = jump_velocity
+	else:
+		target_velocity.y -= fall_acceleration * delta
 
 	velocity = target_velocity
 	move_and_slide()
@@ -81,7 +86,7 @@ func _physics_process(delta):
 		dig_timer -= delta
 		if dig_timer <= 0.0:
 			voxel_tool.mode = VoxelTool.MODE_REMOVE
-			voxel_tool.grow_sphere(dig_marker.global_position, 5.0, 2)
+			voxel_tool.grow_sphere(dig_marker.global_position, 5.0, dig_power)
 			rpc("rpc_dig", dig_marker.global_position)
 			dig_timer = dig_interval
 
@@ -90,16 +95,16 @@ func _physics_process(delta):
 		make_timer -= delta
 		if make_timer <= 0.0:
 			voxel_tool.mode = VoxelTool.MODE_ADD
-			voxel_tool.grow_sphere(dig_marker.global_position, 5.0, 2)
+			voxel_tool.grow_sphere(dig_marker.global_position, 5.0, dig_power)
 			rpc("rpc_make", dig_marker.global_position)
 			make_timer = dig_interval
 
 @rpc("authority", "call_remote")
 func rpc_dig(voxel_pos: Vector3):
 	voxel_tool.mode = VoxelTool.MODE_REMOVE
-	voxel_tool.grow_sphere(voxel_pos, 5.0, 2)
+	voxel_tool.grow_sphere(voxel_pos, 5.0, dig_power)
 
 @rpc("authority", "call_remote")
 func rpc_make(voxel_pos: Vector3):
 	voxel_tool.mode = VoxelTool.MODE_ADD
-	voxel_tool.grow_sphere(voxel_pos, 5.0, 2)
+	voxel_tool.grow_sphere(voxel_pos, 5.0, dig_power)
