@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://dv7pfe2uutdoq"]
+[gd_scene load_steps=6 format=3 uid="uid://tfkn4vxl4gi8"]
 
-[ext_resource type="Script" uid="uid://b41kccxyr1lav" path="res://playerOld5.gd" id="1_onrkg"]
-[ext_resource type="Script" uid="uid://cdk05031nrp4y" path="res://camera_3d.gd" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://bbbra0wpthwgs" path="res://player.gd" id="1_bg7dk"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_sh265"]
 
@@ -9,13 +8,17 @@
 radius = 0.6166992
 height = 1.2333984
 
+[sub_resource type="SphereMesh" id="SphereMesh_4flbx"]
+radius = 0.1
+height = 0.2
+
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_4flbx"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 2
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_onrkg")
+script = ExtResource("1_bg7dk")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_sh265")
@@ -26,13 +29,13 @@ shape = SubResource("CapsuleShape3D_sh265")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7619357, 0)
-script = ExtResource("2_onrkg")
 
-[node name="RayCast3D" type="RayCast3D" parent="Camera3D"]
-target_position = Vector3(0, 0, -5)
+[node name="digMarker" type="Marker3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.0970826)
 
-[node name="DigMarker" type="Marker3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.669568)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D/digMarker"]
+mesh = SubResource("SphereMesh_4flbx")
+skeleton = NodePath("../..")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_4flbx")
